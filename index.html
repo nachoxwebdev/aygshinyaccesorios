@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google-site-verification" content="u_o3juAYefByThrV4ZmhwJ09-lsZ04dSP4-K-rPjdUw">
+    <meta name="description" content="Accesorios artesanales: pulseras, collares y piezas personalizadas. Envíos a todo el país.">
+    <meta name="keywords" content="pulseras, collares, accesorios personalizados, bisutería artesanal">
+    <meta property="og:title" content="A&G Shiny Accesorios">
+    <meta property="og:image" content="imagenes/logo.jpeg">
+    <title>A&G Shiny Accesorios</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- BANNER ARRIBA DE TODO (ahora cierra menús y carrito) -->
+<a href="#" onclick="mostrarCategoria('todos'); document.getElementById('carrito-panel').style.display='none'; return false;">
+    <div class="banner-img">
+        <img src="imagenes/banner.png" alt="A&G Shiny Accesorios" loading="lazy">
+    </div>
+</a>
+
+<header>
+    <div class="logo">
+        <img src="imagenes/logo.jpeg" alt="Logo" loading="lazy">
+        <h2>A&G Shiny Accesories</h2>
+    </div>
+
+    <nav>
+        <a href="#" onclick="mostrarCategoria('todos'); return false;" class="nav-link">🏠 Inicio</a>
+
+        <!-- PRODUCTOS -->
+        <div class="menu-productos" onclick="toggleProductos(event)">
+            <a href="#" onclick="return false;">💎 Productos</a>
+            <div class="submenu" id="submenu-productos">
+                <a href="#" onclick="mostrarCategoria('pulseras'); return false;">Pulseras</a>
+                <a href="#" onclick="mostrarCategoria('collares'); return false;">Collares</a>
+                <a href="#" onclick="mostrarCategoria('personalizadas'); return false;">Personalizadas</a>
+            </div>
+        </div>
+
+        <!-- CONTACTO -->
+        <div class="menu-contacto" onclick="toggleContacto(event)">
+            <a href="#" onclick="return false;">📩 Contacto</a>
+            <div class="submenu-contacto" id="submenu-contacto">
+                <a href="https://wa.me/5493364106337" target="_blank">WhatsApp</a>
+                <a href="https://www.instagram.com/ayg_shinyaccesories/" target="_blank">Instagram</a>
+            </div>
+        </div>
+    </nav>
+
+    <input class="buscador" id="buscador" placeholder="Buscar producto">
+
+    <div class="carrito" onclick="toggleCarrito()">
+        🛒 <span id="contador">0</span>
+    </div>
+</header>
+
+<!-- PULSERAS -->
+<section class="productos" id="pulseras">
+    <div class="card">
+        <img src="imagenes/pulsera-cristal-azul.PNG" alt="Pulsera Cristal Azul" onclick="verImagen(this.src)" loading="lazy">
+        <h3>Pulsera Cristal Azul</h3>
+        <p>$3000</p>
+        <button onclick="agregarCarrito('Pulsera Cristal Azul', 3000)">Agregar</button>
+        <a href="producto.html?producto=pulsera-azul" class="ver-detalle">Ver detalle</a>
+    </div>
+
+    <div class="card">
+        <img src="imagenes/pulsera-piedras-negras.PNG" alt="Pulsera Piedras Negras" onclick="verImagen(this.src)" loading="lazy">
+        <h3>Pulsera Piedras Negras</h3>
+        <p>$3000</p>
+        <button onclick="agregarCarrito('Pulsera Piedras Negras', 3000)">Agregar</button>
+        <a href="producto.html?producto=pulsera-negra" class="ver-detalle">Ver detalle</a>
+    </div>
+
+    <div class="card">
+        <img src="imagenes/pulsera-3-estrellas.png" alt="Pulsera 3 Estrellas" onclick="verImagen(this.src)" loading="lazy">
+        <h3>Pulsera 3 Estrellas</h3>
+        <p>$3000</p>
+        <button onclick="agregarCarrito('Pulsera 3 Estrellas', 3000)">Agregar</button>
+        <a href="producto.html?producto=pulsera-3-estrellas" class="ver-detalle">Ver detalle</a>
+    </div>
+
+    <div class="card">
+        <img src="imagenes/pulsera-celeste-blanca.PNG" alt="Pulsera Piedras Celestes" onclick="verImagen(this.src)" loading="lazy">
+        <h3>Pulsera Piedras Celestes</h3>
+        <p>$3000</p>
+        <button onclick="agregarCarrito('Pulsera Celeste Blanca', 3000)">Agregar</button>
+        <a href="producto.html?producto=pulsera-celeste" class="ver-detalle">Ver detalle</a>
+    </div>
+
+    <div class="card">
+        <img src="imagenes/pulsera-perla-violeta.png" alt="Pulsera Perla y Cristales Violetas" onclick="verImagen(this.src)" loading="lazy">
+        <h3>Pulsera Perla y Cristales Violetas</h3>
+        <p>$3000</p>
+        <button onclick="agregarCarrito('Pulsera Perla y Violeta', 3000)">Agregar</button>
+        <a href="producto.html?producto=pulsera-violeta" class="ver-detalle">Ver detalle</a>
+    </div>
+
+    <div class="card">
+        <img src="imagenes/combo-2-pulseras-corazon.PNG" alt="Combo 2 pulseras medio corazón" onclick="verImagen(this.src)" loading="lazy">
+        <h3>Combo 2 pulseras medio corazón</h3>
+        <p>$5000</p>
+        <button onclick="agregarCarrito('Combo 2 pulseras corazón', 5000)">Agregar</button>
+        <a href="producto.html?producto=combo-corazon" class="ver-detalle">Ver detalle</a>
+    </div>
+</section>
+
+<!-- COLLARES -->
+<section class="productos" id="collares">
+    <div class="card">
+        <img src="imagenes/collar-flor.jpeg" alt="Collar Margarita Dorado y Perla" onclick="verImagen(this.src)" loading="lazy">
+        <h3>Collar Margarita Dorado y Perla</h3>
+        <p>$4000</p>
+        <button onclick="agregarCarrito('Collar Margarita Dorado', 4000)">Agregar</button>
+        <a href="producto.html?producto=collar-margarita" class="ver-detalle">Ver detalle</a>
+    </div>
+
+    <div class="card">
+        <img src="imagenes/collar-de-ostras.png" alt="Collar negro con Ostras" onclick="verImagen(this.src)" loading="lazy">
+        <h3>Collar negro con Ostras</h3>
+        <p>$4000</p>
+        <button onclick="agregarCarrito('Collar de Ostras', 4000)">Agregar</button>
+        <a href="producto.html?producto=collar-ostras" class="ver-detalle">Ver detalle</a>
+    </div>
+
+    <div class="card">
+        <img src="imagenes/collar-margarita-negro-blanco.PNG" alt="Collar Margarita Negro y Perla" onclick="verImagen(this.src)" loading="lazy">
+        <h3>Collar Margarita Negro y Perla</h3>
+        <p>$4000</p>
+        <button onclick="agregarCarrito('Collar Margarita Negro', 4000)">Agregar</button>
+        <a href="producto.html?producto=collar-margarita-negro" class="ver-detalle">Ver detalle</a>
+    </div>
+
+    <div class="card">
+        <img src="imagenes/collar-flor-violeta-perla.PNG" alt="Collar Flor Violeta" onclick="verImagen(this.src)" loading="lazy">
+        <h3>Collar Flor Violeta</h3>
+        <p>$4000</p>
+        <button onclick="agregarCarrito('Collar Flor Violeta', 4000)">Agregar</button>
+        <a href="producto.html?producto=collar-violeta" class="ver-detalle">Ver detalle</a>
+    </div>
+</section>
+
+<!-- PERSONALIZADAS -->
+<section id="personalizadas" style="padding:80px;text-align:center">
+    <h2>Accesorios Personalizados</h2>
+    <p style="margin-top:20px;font-size:18px">Contactarse por mensaje para accesorios personalizados</p>
+    <a href="https://wa.me/5493364106337" target="_blank">
+        <button style="margin-top:20px;width:250px">Contactar por WhatsApp</button>
+    </a>
+</section>
+
+<!-- CARRITO (mejorado) -->
+<div id="carrito-panel" style="display:none">
+    <div style="display:flex; justify-content:space-between;">
+        <h3>🛒 Carrito</h3>
+        <span id="cerrar-carrito" style="cursor:pointer;">✖️</span>
+    </div>
+    <ul id="lista-carrito"></ul>
+    <p><strong>Total: $<span id="total">0</span></strong></p>
+    <select id="metodoPago">
+        <option value="Transferencia">Transferencia bancaria</option>
+        <option value="Mercado Pago">Mercado Pago</option>
+        <option value="Efectivo">Efectivo (solo retiro)</option>
+    </select>
+    <br><br>
+    <button onclick="realizarPedido()">📲 Realizar pedido</button>
+    <button onclick="vaciarCarrito()">🗑️ Vaciar carrito</button>
+</div>
+
+<!-- VISOR IMAGEN con botón cerrar -->
+<div id="visor-imagen" onclick="cerrarImagen()" style="display:none">
+    <span id="cerrar-visor">&times;</span>
+    <img id="imagen-grande">
+</div>
+
+<!-- Mensaje sin resultados (buscador) -->
+<div id="sin-resultados" style="display:none; text-align:center; padding:40px;">❌ No se encontraron productos</div>
+
+<footer>
+    <p>© 2026 A&G Shiny Accesorios - San Nicolás, Argentina</p>
+    <div class="redes">
+        <a href="https://www.instagram.com/ayg_shinyaccesories/" target="_blank">Instagram</a>
+        <a href="https://wa.me/5493364106337" target="_blank">WhatsApp</a>
+    </div>
+    <p>Hecho con 💖 para vos</p>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
+
+
