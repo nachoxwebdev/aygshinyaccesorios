@@ -1,214 +1,205 @@
 // ======================== CARRITO GLOBAL ========================
 let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+carrito = carrito.map(item => item.cantidad ? item : { ...item, cantidad: 1 });
+localStorage.setItem("carrito", JSON.stringify(carrito));
 
-// Elementos DOM
 const listaCarrito = document.getElementById("lista-carrito");
 const totalElemento = document.getElementById("total");
 const contadorCarrito = document.getElementById("contador");
 const carritoPanel = document.getElementById("carrito-panel");
 const buscador = document.getElementById("buscador");
-const productosCards = document.querySelectorAll(".card");
 const sinResultadosDiv = document.getElementById("sin-resultados");
 
-// ======================== FUNCIONES CARRITO ========================
 function actualizarCarrito() {
     if (!listaCarrito) return;
     listaCarrito.innerHTML = "";
     let total = 0;
-    carrito.forEach((producto, index) => {
+    carrito.forEach((p, i) => {
         const li = document.createElement("li");
-        li.innerHTML = `
-            ${producto.nombre} - $${producto.precio}
-            <button onclick="eliminarProducto(${index})">❌</button>
-        `;
+        li.innerHTML = `${p.nombre} (x${p.cantidad}) - $${p.precio * p.cantidad} <button onclick="eliminarProducto(${i})">❌</button>`;
         listaCarrito.appendChild(li);
-        total += producto.precio;
+        total += p.precio * p.cantidad;
     });
     if (totalElemento) totalElemento.textContent = total;
-    if (contadorCarrito) contadorCarrito.textContent = carrito.length;
+    if (contadorCarrito) contadorCarrito.textContent = carrito.reduce((acc, p) => acc + p.cantidad, 0);
     localStorage.setItem("carrito", JSON.stringify(carrito));
 }
 
-// 🔧 FUNCIÓN INTELIGENTE: acepta ambos estilos de llamada
 window.agregarCarrito = function(arg1, arg2, arg3) {
     let nombre, precio;
-    
-    // Caso 1: llamado con (event, nombre, precio)
     if (arg1 && typeof arg1 === 'object' && arg1.target) {
-        // arg1 es el evento
         nombre = arg2;
         precio = arg3;
-    } 
-    // Caso 2: llamado con (nombre, precio) directamente
-    else {
+    } else {
         nombre = arg1;
         precio = arg2;
     }
-    
-    // Validar que precio sea un número
-    if (typeof precio !== 'number' || isNaN(precio)) {
-        console.error("Precio inválido:", precio);
-        alert("Error: el precio del producto no es válido");
-        return;
-    }
-    
-    carrito.push({ nombre: String(nombre), precio: Number(precio) });
+    if (typeof precio !== 'number' || isNaN(precio)) return;
+
+    const existente = carrito.find(p => p.nombre === nombre);
+    existente ? existente.cantidad++ : carrito.push({ nombre: String(nombre), precio: Number(precio), cantidad: 1 });
     actualizarCarrito();
-    
-    // Feedback visual (intenta obtener el botón clickeado)
+    if (contadorCarrito) {
+        contadorCarrito.classList.add("pulse");
+        setTimeout(() => contadorCarrito.classList.remove("pulse"), 400);
+    }
+
+    // Feedback visual mejorado
     let btn = null;
-    if (arg1 && arg1.target) {
+    if (arg1 && typeof arg1 === 'object' && arg1.target && arg1.target.tagName === 'BUTTON') {
         btn = arg1.target;
     } else {
-        // Si no hay evento, busca el botón activo (fallback)
-        btn = window.event ? window.event.target : null;
+        btn = document.activeElement;
+        if (btn && btn.tagName !== 'BUTTON') btn = null;
     }
-    
-    if (btn && btn.tagName === 'BUTTON') {
+
+    if (btn) {
         const originalText = btn.innerText;
+        const originalBg = btn.style.backgroundColor || getComputedStyle(btn).backgroundColor;
         btn.innerText = "✓ Agregado";
         btn.style.backgroundColor = "#4CAF50";
         setTimeout(() => {
             btn.innerText = originalText;
-            btn.style.backgroundColor = "black";
+            btn.style.backgroundColor = originalBg;
         }, 1000);
-    } else {
-        // Si no se pudo obtener el botón, al menos avisar
-        alert(`✅ ${nombre} agregado al carrito`);
     }
 };
 
-window.eliminarProducto = function(index) {
-    carrito.splice(index, 1);
-    actualizarCarrito();
-};
-
-window.vaciarCarrito = function() {
-    carrito = [];
-    actualizarCarrito();
-};
+window.eliminarProducto = function(index) { carrito.splice(index, 1); actualizarCarrito(); };
+window.vaciarCarrito = function() { carrito = []; actualizarCarrito(); };
 
 // ======================== PANEL CARRITO ========================
-window.toggleCarrito = function() {
-    if (!carritoPanel) return;
-    carritoPanel.style.display = carritoPanel.style.display === "block" ? "none" : "block";
-};
-
-const cerrarCarritoBtn = document.getElementById("cerrar-carrito");
-if (cerrarCarritoBtn) {
-    cerrarCarritoBtn.addEventListener("click", () => {
-        if (carritoPanel) carritoPanel.style.display = "none";
-    });
+if (carritoPanel) {
+    window.toggleCarrito = () => carritoPanel.style.display = carritoPanel.style.display === "block" ? "none" : "block";
+    document.getElementById("cerrar-carrito")?.addEventListener("click", () => carritoPanel.style.display = "none");
 }
 
-// ======================== PEDIDO POR WHATSAPP ========================
+// ======================== PEDIDO WHATSAPP ========================
 window.realizarPedido = function() {
-    if (carrito.length === 0) {
-        alert("El carrito está vacío");
-        return;
-    }
-    const metodoSelect = document.getElementById("metodoPago");
-    let metodo = metodoSelect ? metodoSelect.value : "No especificado";
-    let mensaje = "Hola! Quiero realizar el siguiente pedido:%0A%0A";
-    carrito.forEach(p => {
-        // Asegurar que precio sea número
-        const precioValido = typeof p.precio === 'number' ? p.precio : 0;
-        mensaje += `${p.nombre} - $${precioValido}%0A`;
-    });
-    const total = carrito.reduce((acc, p) => acc + (typeof p.precio === 'number' ? p.precio : 0), 0);
-    mensaje += `%0ATotal: $${total}%0AMétodo de pago: ${metodo}%0A%0A¡Gracias!`;
+    if (!carrito.length) return alert("Carrito vacío");
+    const metodo = document.getElementById("metodoPago")?.value || "No especificado";
+    let mensaje = "Hola! Quiero este pedido:%0A%0A";
+    carrito.forEach(p => mensaje += `${p.nombre} (x${p.cantidad}) - $${p.precio * p.cantidad}%0A`);
+    const total = carrito.reduce((acc, p) => acc + p.precio * p.cantidad, 0);
+    mensaje += `%0ATotal: $${total}%0AMétodo: ${metodo}`;
     window.open(`https://wa.me/5493364106337?text=${mensaje}`, "_blank");
 };
+
+// ======================== GENERAR CARDS DINÁMICAS ========================
+function crearCard(prod) {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.setAttribute("data-id", prod.id);
+    card.innerHTML = `
+        ${prod.badge ? `<span class="badge">${prod.badge}</span>` : ''}
+        <img src="${prod.imagen}" alt="${prod.nombre}" onclick="verImagen('${prod.imagen}')" loading="lazy">
+        <h3>${prod.nombre}</h3>
+        <p>$${prod.precio}</p>
+        <button onclick="agregarCarrito(event, '${prod.nombre.replace(/'/g, "\\'")}', ${prod.precio})">Agregar</button>
+        <a href="producto.html?producto=${prod.id}" class="ver-detalle">Ver detalle</a>
+    `;
+    return card;
+}
+
+function renderizarProductos() {
+    const pulserasSec = document.getElementById("pulseras");
+    const collaresSec = document.getElementById("collares");
+    document.querySelectorAll('.skeleton-card').forEach(s => s.remove());
+
+    productos.forEach(p => {
+        const card = crearCard(p);
+        if (p.categoria === "pulseras" && pulserasSec) pulserasSec.appendChild(card);
+        else if (p.categoria === "collares" && collaresSec) collaresSec.appendChild(card);
+    });
+    observarCards();
+}
+
+// ======================== INTERSECCIÓN PARA SCROLL ========================
+function observarCards() {
+    const cards = document.querySelectorAll('.card');
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.1 });
+    cards.forEach(card => observer.observe(card));
+}
 
 // ======================== BUSCADOR ========================
 if (buscador) {
     buscador.addEventListener("keyup", () => {
         const texto = buscador.value.toLowerCase().trim();
-        let hayCoincidencias = false;
-        productosCards.forEach(card => {
+        mostrarCategoria('todos');
+        let coincidencias = false;
+        document.querySelectorAll(".card").forEach(card => {
             const nombre = card.querySelector("h3")?.innerText.toLowerCase() || "";
-            if (nombre.includes(texto)) {
-                card.style.display = "block";
-                hayCoincidencias = true;
-            } else {
-                card.style.display = "none";
-            }
+            card.style.display = nombre.includes(texto) ? "block" : "none";
+            if (nombre.includes(texto)) coincidencias = true;
         });
-        if (sinResultadosDiv) {
-            sinResultadosDiv.style.display = hayCoincidencias ? "none" : "block";
-        }
+        if (sinResultadosDiv) sinResultadosDiv.style.display = coincidencias ? "none" : "block";
     });
 }
 
-// ======================== VISOR DE IMÁGENES ========================
-window.verImagen = function(src) {
-    const visor = document.getElementById("visor-imagen");
-    const imagenGrande = document.getElementById("imagen-grande");
-    if (visor && imagenGrande) {
-        visor.style.display = "flex";
-        imagenGrande.src = src;
-    }
+// ======================== VISOR IMAGEN ========================
+window.verImagen = src => {
+    document.getElementById("visor-imagen").style.display = "flex";
+    document.getElementById("imagen-grande").src = src;
 };
-
-window.cerrarImagen = function() {
-    const visor = document.getElementById("visor-imagen");
-    if (visor) visor.style.display = "none";
-};
-
-const cerrarVisor = document.getElementById("cerrar-visor");
-if (cerrarVisor) {
-    cerrarVisor.addEventListener("click", cerrarImagen);
-}
+window.cerrarImagen = () => document.getElementById("visor-imagen").style.display = "none";
+document.getElementById("cerrar-visor")?.addEventListener("click", window.cerrarImagen);
 
 // ======================== MENÚS DESPLEGABLES ========================
-window.toggleProductos = function(e) {
+window.toggleProductos = e => {
     e.stopPropagation();
-    const submenuProductos = document.getElementById("submenu-productos");
-    const submenuContacto = document.getElementById("submenu-contacto");
-    if (submenuProductos) submenuProductos.classList.toggle("show");
-    if (submenuContacto) submenuContacto.classList.remove("show");
+    document.getElementById("submenu-productos").classList.toggle("show");
+    document.getElementById("submenu-contacto").classList.remove("show");
 };
-
-window.toggleContacto = function(e) {
+window.toggleContacto = e => {
     e.stopPropagation();
-    const submenuProductos = document.getElementById("submenu-productos");
-    const submenuContacto = document.getElementById("submenu-contacto");
-    if (submenuContacto) submenuContacto.classList.toggle("show");
-    if (submenuProductos) submenuProductos.classList.remove("show");
+    document.getElementById("submenu-contacto").classList.toggle("show");
+    document.getElementById("submenu-productos").classList.remove("show");
 };
-
 document.addEventListener("click", () => {
-    const subP = document.getElementById("submenu-productos");
-    const subC = document.getElementById("submenu-contacto");
-    if (subP) subP.classList.remove("show");
-    if (subC) subC.classList.remove("show");
+    document.querySelectorAll(".submenu.show, .submenu-contacto.show").forEach(el => el.classList.remove("show"));
 });
 
 // ======================== FILTRAR POR CATEGORÍA ========================
-window.mostrarCategoria = function(categoria) {
-    const pulseras = document.getElementById("pulseras");
-    const collares = document.getElementById("collares");
-    const personalizadas = document.getElementById("personalizadas");
-
-    if (pulseras) pulseras.style.display = "none";
-    if (collares) collares.style.display = "none";
-    if (personalizadas) personalizadas.style.display = "none";
-
-    if (categoria === "todos") {
-        if (pulseras) pulseras.style.display = "grid";
-        if (collares) collares.style.display = "grid";
-        if (personalizadas) personalizadas.style.display = "block";
-    } else if (categoria === "pulseras") {
-        if (pulseras) pulseras.style.display = "grid";
-    } else if (categoria === "collares") {
-        if (collares) collares.style.display = "grid";
-    } else if (categoria === "personalizadas") {
-        if (personalizadas) personalizadas.style.display = "block";
-    }
-
+window.mostrarCategoria = cat => {
+    const pul = document.getElementById("pulseras");
+    const col = document.getElementById("collares");
+    const per = document.getElementById("personalizadas");
+    [pul, col, per].forEach(s => s && (s.style.display = "none"));
+    if (cat === "todos") {
+        if (pul) pul.style.display = "grid";
+        if (col) col.style.display = "grid";
+        if (per) per.style.display = "block";
+    } else if (cat === "pulseras" && pul) pul.style.display = "grid";
+    else if (cat === "collares" && col) col.style.display = "grid";
+    else if (cat === "personalizadas" && per) per.style.display = "block";
     if (carritoPanel) carritoPanel.style.display = "none";
 };
 
+// ======================== BOTÓN VOLVER ARRIBA ========================
+const backToTop = document.getElementById("back-to-top");
+window.addEventListener("scroll", () => {
+    if (window.scrollY > 400) backToTop?.classList.add("visible");
+    else backToTop?.classList.remove("visible");
+});
+backToTop?.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+
+// ======================== MODO OSCURO ========================
+const darkToggle = document.getElementById("dark-mode-toggle");
+const body = document.body;
+if (localStorage.getItem("darkMode") === "true") body.classList.add("dark");
+darkToggle?.addEventListener("click", () => {
+    body.classList.toggle("dark");
+    localStorage.setItem("darkMode", body.classList.contains("dark"));
+});
+
 // ======================== INICIALIZACIÓN ========================
+renderizarProductos();
 actualizarCarrito();
 mostrarCategoria("todos");

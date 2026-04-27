@@ -4,35 +4,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detalle del Producto - A&G Shiny Accesorios</title>
+    <link rel="icon" href="imagenes/logo.jpeg">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <header>
+    <header class="header-detalle">
+        <a href="index.html" class="volver">← Volver al catálogo</a>
         <h1>A&G Shiny Accesorios</h1>
-        <a href="index.html">← Volver al catálogo</a>
     </header>
 
-    <section class="producto-detalle">
-        <img id="imagen-producto" alt="Producto">
-        <div class="info">
-            <h2 id="nombre-producto"></h2>
-            <p class="precio" id="precio-producto"></p>
-            <button id="agregar-carrito-producto">Agregar al carrito</button>
-            <p id="descripcion-producto"></p>
-            <h3>Medios de pago</h3>
-            <ul>
-                <li>💵 Efectivo (retiro en punto de encuentro)</li>
-                <li>🏦 Transferencia bancaria</li>
-                <li>💳 Mercado Pago</li>
-            </ul>
-            <a id="whatsapp" class="whatsapp" target="_blank">Comprar por WhatsApp</a>
-        </div>
-    </section>
+    <main class="detalle-container">
+        <section class="producto-detalle">
+            <div class="imagen-detalle">
+                <img id="imagen-producto" alt="Producto">
+            </div>
+            <div class="info-detalle">
+                <h2 id="nombre-producto"></h2>
+                <p class="precio" id="precio-producto"></p>
+                <button id="agregar-carrito-producto" class="btn-agregar-detalle">Agregar al carrito</button>
+                <p id="descripcion-producto" class="descripcion"></p>
+                <div class="medios-pago">
+                    <h3>Medios de pago</h3>
+                    <ul>
+                        <li>💵 Efectivo</li>
+                        <li>🏦 Transferencia bancaria</li>
+                        <li>💳 Mercado Pago</li>
+                    </ul>
+                </div>
+                <a id="whatsapp" class="whatsapp-detalle" target="_blank">Comprar por WhatsApp</a>
+            </div>
+        </section>
+    </main>
 
     <footer>
         <p>© 2026 A&G Shiny Accesorios - San Nicolás</p>
     </footer>
 
+    <script src="productos.js"></script>
+    <script src="script.js"></script>
     <script src="producto.js"></script>
 </body>
 </html>
